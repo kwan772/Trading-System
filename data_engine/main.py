@@ -1,6 +1,6 @@
 import os
 import requests
-from data_fetcher import MarketStack
+from stock_api_fetcher import MarketStack
 
 
 
