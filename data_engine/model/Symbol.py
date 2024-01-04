@@ -15,10 +15,12 @@ class Symbol(Base):
     timezone = Column(String(255))
     industry = Column(String(255))
     market_cap_category = Column(String(255))
+    data_status = Column(String(255), nullable=False, default="incomplete")
+    source = Column(String(255))
 
     # Adding a relationship to the Symbol class
     prices = relationship("HistoricalPrice", order_by=HistoricalPrice.datetime, back_populates="symbol_data")
-    def __init__(self, name, symbol, stock_exchange, stock_exchange_short, timezone, industry, market_cap_category):
+    def __init__(self, name, symbol, stock_exchange, stock_exchange_short, timezone, industry, market_cap_category, source):
         self.name = name
         self.symbol = symbol
         self.stock_exchange = stock_exchange
@@ -26,8 +28,10 @@ class Symbol(Base):
         self.timezone = timezone
         self.industry = industry
         self.market_cap_category = market_cap_category
+        self.data_status = "incomplete"
+        self.source = source
 
     def __repr__(self):
-        return f"Symbol(name={self.name}, symbol={self.symbol}, stock_exchange={self.stock_exchange}, stock_exchange_short={self.stock_exchange_short}, timezone={self.timezone}, industry={self.industry}, market_cap_category={self.market_cap_category})"
+        return f"Symbol(name={self.name}, symbol={self.symbol}, stock_exchange={self.stock_exchange}, stock_exchange_short={self.stock_exchange_short}, timezone={self.timezone}, industry={self.industry}, market_cap_category={self.market_cap_category}, source={self.source})"
 
 

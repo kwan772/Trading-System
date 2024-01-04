@@ -42,15 +42,21 @@ if __name__ == '__main__':
     session = Session()
     marketstack = MarketStack()
 
-    tickers = {"small cap": {"tech": ["NVTS", "AAOI", "NOVA", "EB", "SMRT"],
-                             "finance": ["CLSK", "BITF", "APLD"],
-                             "energy": ["VET", "TALO"]},
-               "large cap": {"tech": ["SHOP", "SQ", "PLTR", "AFRM", "U"],
-                             "finance": ["PYPL", "KKR", "UNCFF"],
-                             "energy": ["HAL", "CVE"]},
-               "mega cap": {"tech": ["AAPL", "NVDA", "ADBE", "CRM", "AMD"],
-                            "finance": ["BAC", "C/PJ", "BX"],
-                            "energy": ["XOM", "COP"]}, }
+
+
+    tickers = {"high volatility": {"tech": ["NCTY", "EBIX"],
+                             "real estate": ["WHLR"],
+                             "shipment": ["OP"],
+                             "biotech": ["AXLA", "BNOX", "GRCL"],
+                             "healthcare": ["FEMY", "GRTS"],
+                             "space": ["MNTS"]
+                                   },
+               "large cap": {"tech": ["MARA", "CVNA"],
+                             "travel services": ["CCL"],
+                             "auto manufacturers": ["XPEV"],
+                             "energy": ["RIG"]},
+               "mega cap": {"tech": ["TSLA", "META"]}
+               }
 
     for market_cap in tickers:
         for industry in tickers[market_cap]:

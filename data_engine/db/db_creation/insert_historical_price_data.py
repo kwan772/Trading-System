@@ -23,13 +23,7 @@ def insert_historical_price_data(historical_prices, session):
         'low': price_data.low,
         'close': price_data.close,
         'volume': price_data.volume,
-        'adj_open': price_data.adj_open,
-        'adj_high': price_data.adj_high,
-        'adj_low': price_data.adj_low,
-        'adj_close': price_data.adj_close,
-        'adj_volume': price_data.adj_volume,
-        'split_factor': price_data.split_factor,
-        'dividend': price_data.dividend
+        'last': price_data.last
     } for price_data in historical_prices]
 
     try:
@@ -61,12 +55,24 @@ if __name__ == '__main__':
     session = Session()
     marketstack = MarketStack()
 
-    symbols = session.query(Symbol).all()
+    symbols = session.query(Symbol).filter(Symbol.data_status == "incomplete").all()
+    print(symbols)
+    failed_symbols = {}
+    # symbols = []
+    # symbols.append(Symbol("AFRM", "AFRM", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
+    # symbols.append(Symbol("NVTS", "NVTS", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
+    # symbols.append(Symbol("PLTR", "PLTR", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
+    # symbols.append(Symbol("U", "U", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
     for symbol in symbols:
-        historical_prices = marketstack.get_price_data('2022-12-21','2023-11-15',symbol)
-        print(historical_prices)
-        insert_historical_price_data(historical_prices, session)
-        break
-
+        try:
+            historical_prices = marketstack.get_price_data('2018-01-01','2023-12-08',symbol, 'intraday')
+            insert_historical_price_data(historical_prices, session)
+            symbol.data_status = "complete"
+            session.commit()
+        except Exception as e:
+            print(e)
+            failed_symbols[symbol.symbol] = e
     # Close the session
     session.close()
+
+    print(failed_symbols)
