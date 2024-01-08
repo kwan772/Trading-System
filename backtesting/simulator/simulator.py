@@ -19,6 +19,8 @@ class Simulator:
 
         for symbol in symbols:
             # Get the historical prices for the symbol
+            if symbol.symbol != "AAPL":
+                continue
             historical_prices = symbol.prices
             self.searcher.search(symbol, historical_prices)
 

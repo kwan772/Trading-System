@@ -29,7 +29,7 @@ class MarketStack:
 
             params = {
                 'access_key': self.API_KEY,
-                'symbols': symbol.symbol,
+                'symbols': symbol,
                 'limit': 1000,
                 'date_from': start,
                 'sort': 'ASC',
@@ -37,15 +37,17 @@ class MarketStack:
             }
             result = requests.get(self.BASE_URL + price_type, params)
             response = result.json()
+            print(response)
+
             last_day = datetime.strptime(response['data'][-1]['date'], "%Y-%m-%dT%H:%M:%S%z").date()
-            print(f"{symbol.symbol} fetched -> start date {start}")
+            print(f"{symbol} fetched -> start date {start}")
             if start == end_day:
                 start = start + timedelta(days=1)
             else:
                 start = last_day
 
             for price in response['data']:
-                data.append(HistoricalPrice(symbol.symbol, self.format_datetime_for_mysql(price['date']), price['open'], price['high'], price['low'],
+                data.append(HistoricalPrice(symbol, self.format_datetime_for_mysql(price['date']), price['open'], price['high'], price['low'],
                                             price['close'], price['volume'], price['last']))
             print(f"end date: {last_day}")
         return data

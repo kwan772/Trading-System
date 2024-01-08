@@ -7,7 +7,7 @@ from data_engine.db.base import Base
 from sqlalchemy.orm import sessionmaker
 from data_engine.model import Symbol
 from data_engine.model.HistoricalPrice import HistoricalPrice
-from data_engine.stock_api_fetcher import MarketStack
+from data_engine.stock_api_fetcher import MarketStack, Fmp
 
 
 from sqlalchemy.orm import Session
@@ -53,9 +53,10 @@ if __name__ == '__main__':
     # Create a session
     Session = sessionmaker(bind=engine)
     session = Session()
-    marketstack = MarketStack()
+    marketstack = Fmp()
 
-    symbols = session.query(Symbol).filter(Symbol.data_status == "incomplete").all()
+    # symbols = session.query(Symbol).filter(Symbol.data_status == "incomplete").all()
+    symbols = session.query(Symbol).filter(Symbol.source != "marketstack", Symbol.data_status == "incomplete", Symbol.industry == "Technology").all()
     print(symbols)
     failed_symbols = {}
     # symbols = []
@@ -63,15 +64,20 @@ if __name__ == '__main__':
     # symbols.append(Symbol("NVTS", "NVTS", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
     # symbols.append(Symbol("PLTR", "PLTR", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
     # symbols.append(Symbol("U", "U", "NASDAQ", "NASDAQ", "America/New_York", "Technology", "mega cap"))
+    start = False
     for symbol in symbols:
-        try:
-            historical_prices = marketstack.get_price_data('2018-01-01','2023-12-08',symbol, 'intraday')
-            insert_historical_price_data(historical_prices, session)
-            symbol.data_status = "complete"
-            session.commit()
-        except Exception as e:
-            print(e)
-            failed_symbols[symbol.symbol] = e
+        if symbol.symbol == "INTU":
+            start = True
+        if start:
+            try:
+                historical_prices = marketstack.get_price_data('2017-10-02','2023-12-28',symbol.symbol)
+                insert_historical_price_data(historical_prices, session)
+                symbol.source = "fmp"
+                symbol.data_status = "complete"
+                session.commit()
+            except Exception as e:
+                print(e)
+                failed_symbols[symbol.symbol] = e
     # Close the session
     session.close()
 
